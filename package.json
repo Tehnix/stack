@@ -1,7 +1,7 @@
 {
-  "name": "terminal-slack",
+  "name": "Stack",
   "version": "0.0.1",
-  "description": "A terminal client for slack",
+  "description": "A fork of Evan Yeung's terminal client for Slack",
   "main": "main.js",
   "dependencies": {
     "blessed": "^0.1.56",
@@ -22,17 +22,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/evanyeung/terminal-slack.git"
+    "url": "https://github.com/joshavanier/stack.git"
   },
   "keywords": [
     "slack",
     "terminal",
     "client"
   ],
-  "author": "Evan Yeung",
+  "author": "Josh Avanier",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/evanyeung/terminal-slack/issues"
+    "url": "https://github.com/joshavanier/stack/issues"
   },
-  "homepage": "https://github.com/evanyeung/terminal-slack"
 }
