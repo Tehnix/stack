@@ -10,7 +10,7 @@ let currentUser;
 let channels;
 let currentChannelId;
 
-const UNKNOWN_USER_NAME = 'Unknown User';
+const UNKNOWN_USER_NAME = 'Unknown';
 // This is a hack to make the message list scroll to the bottom whenever a message is sent.
 // Multiline messages would otherwise only scroll one line per message leaving part of the message
 // cut off. This assumes that messages will be less than 50 lines high in the chat window.
@@ -30,10 +30,9 @@ function handleSentConfirmation(message) {
   // for some reason getLines gives an object with int keys
   const lines = components.chatWindow.getLines();
   const keys = Object.keys(lines);
-  let line;
-  let i;
-  for (i = keys.length - 1; i >= 0; i -= 1) {
-    line = lines[keys[i]].split('(pending - ');
+
+  for (let i = keys.length - 1; i >= 0; i -= 1) {
+    let line = lines[keys[i]].split('(pending - ');
     if (parseInt(line.pop()[0], 10) === message.reply_to) {
       components.chatWindow.deleteLine(parseInt(keys[i], 10));
 
@@ -42,18 +41,18 @@ function handleSentConfirmation(message) {
       } else {
         components.chatWindow.insertLine(i, `${line.join('')} (FAILED)`);
       }
+
       break;
     }
   }
+
   components.chatWindow.scroll(SCROLL_PER_MESSAGE);
   components.screen.render();
 }
 
 // formats channel and user mentions readably
 function formatMessageMentions(text) {
-  if (text === null || typeof text === 'undefined') {
-    return '';
-  }
+  if (text === null || typeof text === 'undefined') return '';
 
   let formattedText = text;
   // find user mentions
@@ -104,7 +103,7 @@ function handleNewMessage(message) {
   }
 
   if (message.channel !== currentChannelId ||
-      typeof message.text === 'undefined') {
+    typeof message.text === 'undefined') {
     return;
   }
 
@@ -125,7 +124,7 @@ slack.init((data, ws) => {
   // re render screen
   components.screen.render();
 
-  ws.on('message', (message /* , flags */) => {
+  ws.on('message', (message /* , flags */ ) => {
     const parsedMessage = JSON.parse(message);
 
     if ('reply_to' in parsedMessage) {
@@ -188,9 +187,7 @@ components.screen.render();
 // set the channel list to the channels returned from slack
 slack.getChannels((error, response, data) => {
   if (error || response.statusCode !== 200) {
-    console.log( // eslint-disable-line no-console
-      'Error: ', error, response && response.statusCode
-    );
+    console.log('Error: ', error, response && response.statusCode);
     return;
   }
 
@@ -215,22 +212,23 @@ function updateMessages(data, markFn) {
     // isn't supported by terminal-slack right now so we filter them out
     .filter(item => typeof item.text !== 'undefined')
     .map((message) => {
-      const len = users.length;
       let username;
-      let i;
 
       // get the author
       if (message.user === currentUser.id) {
         username = currentUser.name;
       } else {
-        for (i = 0; i < len; i += 1) {
+        for (let i = 0, l = users.length; i < l; i += 1) {
           if (message.user === users[i].id) {
             username = users[i].name;
             break;
           }
         }
       }
-      return { text: message.text, username: username || UNKNOWN_USER_NAME };
+      return {
+        text: message.text,
+        username: username || UNKNOWN_USER_NAME
+      };
     })
     .forEach((message) => {
       // add messages to window

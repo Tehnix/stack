@@ -219,18 +219,16 @@ module.exports = {
     screen.append(container);
 
     keyBindings['C-q'] = process.exit.bind(null, 0);
-    keyBindings['C-c'] = channelList.focus.bind(channelList); // ctrl-c for channels
-    keyBindings['C-u'] = userList.focus.bind(userList); // ctrl-u for users
-    keyBindings['C-w'] = messageInput.focus.bind(messageInput); // ctrl-w for write
-    keyBindings['C-l'] = chatWindow.focus.bind(chatWindow); // ctrl-l for message list
+    keyBindings['C-c'] = channelList.focus.bind(channelList);
+    keyBindings['C-u'] = userList.focus.bind(userList);
+    keyBindings['C-w'] = messageInput.focus.bind(messageInput);
+    keyBindings['C-l'] = chatWindow.focus.bind(chatWindow);
 
     keyBindings.escape = chatWindow.focus.bind(chatWindow);
 
-    function callKeyBindings(ch, key) {
+    const callKeyBindings = (ch, key) => {
       const fn = keyBindings[key.full];
-      if (fn) {
-        fn();
-      }
+      if (fn) fn();
     }
 
     userList.on('keypress', callKeyBindings);
@@ -243,24 +241,15 @@ module.exports = {
       }
     });
 
-    // event handlers for focus and blur of inputs
     const onFocus = (component) => {
       focusIndicator.content = `{bold}${component.name}{/bold}`;
       screen.render();
     };
 
-    const onBlur = (component) => {
-      screen.render();
-    };
-
     userList.on('focus', onFocus.bind(null, usersBox));
-    // userList.on('blur', onBlur.bind(null, usersBox));
     channelList.on('focus', onFocus.bind(null, channelsBox));
-    // channelList.on('blur', onBlur.bind(null, channelsBox));
     messageInput.on('focus', onFocus.bind(null, messageInput));
-    // messageInput.on('blur', onBlur.bind(null, messageInput));
     chatWindow.on('focus', onFocus.bind(null, mainWindow));
-    // chatWindow.on('blur', onBlur.bind(null, mainWindow));
 
     return {
       screen,
@@ -272,6 +261,7 @@ module.exports = {
       channelList,
       mainWindow,
       mainWindowTitle,
+      focusIndicator,
       chatWindow,
       messageInputBorder,
       messageInput,

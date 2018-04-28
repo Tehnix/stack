@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 const TOKEN = process.env.SLACK_TOKEN;
 
 if (TOKEN === undefined) {
-  console.log( // eslint-disable-line no-console
+  console.log(
     'Error: SLACK_TOKEN undefined. Please add SLACK_TOKEN to the environment variables.'
   );
   process.exit(1);
@@ -36,9 +36,7 @@ function slackRequest(endpoint, query, callback) {
       process.exit(1);
     }
 
-    if (callback) {
-      callback(error, response, data);
-    }
+    if (callback) callback(error, response, data);
   });
 }
 
@@ -52,27 +50,21 @@ module.exports = {
   },
   getChannels(callback) {
     slackRequest('channels.list', {}, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   joinChannel(name, callback) {
     slackRequest('channels.join', {
       name,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   getChannelHistory(id, callback) {
     slackRequest('channels.history', {
       channel: id,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   markChannel(id, timestamp, callback) {
@@ -80,34 +72,26 @@ module.exports = {
       channel: id,
       ts: timestamp,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   getUsers(callback) {
     slackRequest('users.list', {}, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   openIm(id, callback) {
     slackRequest('im.open', {
       user: id,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   getImHistory(id, callback) {
     slackRequest('im.history', {
       channel: id,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
   markIm(id, timestamp, callback) {
@@ -115,9 +99,7 @@ module.exports = {
       channel: id,
       ts: timestamp,
     }, (error, response, data) => {
-      if (callback) {
-        callback(error, response, data);
-      }
+      if (callback) callback(error, response, data);
     });
   },
 };
