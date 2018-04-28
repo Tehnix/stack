@@ -1,5 +1,4 @@
 const blessed = require('blessed');
-
 const keyBindings = {};
 
 module.exports = {
@@ -7,153 +6,163 @@ module.exports = {
     const screen = blessed.screen({
       autopadding: true,
       smartCSR: true,
-      title: 'Slack',
+      title: 'Stack',
       fullUnicode: true,
     });
 
     const container = blessed.box({
       width: '100%',
       height: '100%',
-      style: {
-        fg: '#bbb',
-        bg: '#1d1f21',
-      },
     });
 
     const sideBar = blessed.box({
-      width: '30%',
+      width: '20%',
       height: '100%',
     });
 
     const mainWindow = blessed.box({
-      width: '70%',
+      width: '80%',
       height: '100%',
-      left: '30%',
-      // scrollable: true,
-      border: {
-        type: 'line',
-      },
-      style: {
-        border: {
-          fg: '#888',
-        },
-      },
+      left: '20%',
+      name: 'Main'
     });
 
     const mainWindowTitle = blessed.text({
-      width: '90%',
+      width: '100%-8',
+      height: 1,
+      top: 1,
       tags: true,
     });
 
+    const focusIndicator = blessed.text({
+      width: 8,
+      height: 1,
+      top: 1,
+      right: 0,
+      tags: true,
+      style: {
+        fg: 'red'
+      }
+    })
+
     const chatWindow = blessed.box({
-      width: '90%',
-      height: '75%',
-      left: '5%',
-      top: '10%',
+      width: '100%',
+      height: '100%-10',
+      top: 3,
       keys: true,
       vi: true,
+      mouse: true,
       scrollable: true,
       alwaysScroll: true,
       tags: true,
+      name: 'Chat'
+    });
+
+    const messageInputBorder = blessed.line({
+      width: '100%',
+      bottom: 7,
+      orientation: 'horizontal',
+      ch: '-',
     });
 
     const messageInput = blessed.textbox({
-      width: '90%',
-      left: '5%',
-      top: '85%',
+      width: '100%',
+      height: 7,
+      bottom: 0,
       keys: true,
       vi: true,
+      mouse: true,
       inputOnFocus: true,
-      border: {
-        type: 'line',
-      },
+      name: 'Input'
     });
 
     function searchChannels(searchCallback) {
       const searchBoxTitle = blessed.text({
-        width: '90%',
-        left: '5%',
-        align: 'left',
+        width: '100%-8',
+        height: 1,
+        top: 1,
         content: '{bold}Search{/bold}',
         tags: true,
       });
+
       const searchBox = blessed.textbox({
-        width: '90%',
+        width: '100%',
         height: 'shrink',
-        left: '5%',
-        top: '5%',
+        top: 2,
         keys: true,
         vi: true,
         inputOnFocus: true,
         border: {
-          fg: '#cc6666',
+          fg: 'red',
           type: 'line',
         },
       });
-      function removeSearchBox() {
+
+      const removeSearchBox = _ => {
         mainWindow.remove(searchBox);
         mainWindow.remove(searchBoxTitle);
         mainWindow.append(mainWindowTitle);
         mainWindow.append(chatWindow);
+        mainWindow.append(messageInputBorder);
         mainWindow.append(messageInput);
         screen.render();
       }
+
       searchBox.on('keypress', (ch, key) => {
         if (Object.keys(keyBindings).includes(key.full)) {
           searchBox.cancel();
           removeSearchBox();
           const fn = keyBindings[key.full];
-          if (fn) {
-            fn();
-          }
+          if (fn) fn();
         }
       });
+
       searchBox.on('submit', (text) => {
         removeSearchBox();
         searchCallback(text);
       });
+
       mainWindow.remove(mainWindowTitle);
       mainWindow.remove(chatWindow);
+      mainWindow.remove(messageInputBorder);
       mainWindow.remove(messageInput);
       mainWindow.append(searchBoxTitle);
       mainWindow.append(searchBox);
+
       searchBox.focus();
       screen.render();
     }
 
     const channelsBox = blessed.box({
       width: '100%',
-      height: '60%',
-      border: {
-        type: 'line',
-      },
-      style: {
-        border: {
-          fg: '#888',
-        },
-      },
+      height: '50%',
+      scrollable: true,
+      name: 'Channels'
     });
 
     const channelsTitle = blessed.text({
-      width: '90%',
-      left: '5%',
-      align: 'center',
+      width: '100%-4',
+      height: 1,
+      top: 1,
+      left: 2,
       content: '{bold}Channels{/bold}',
       tags: true,
     });
 
     const channelList = blessed.list({
-      width: '90%',
-      height: '85%',
-      left: '5%',
-      top: '10%',
+      width: '100%-4',
+      height: '100%-3',
+      left: 2,
+      top: 3,
       keys: true,
       vi: true,
+      mouse: true,
+      scrollable: true,
       search: searchChannels,
       style: {
         selected: {
-          bg: '#373b41',
-          fg: '#c5c8c6',
+          bg: 'red',
+          fg: 'white',
         },
       },
       tags: true,
@@ -161,38 +170,34 @@ module.exports = {
 
     const usersBox = blessed.box({
       width: '100%',
-      height: '40%',
-      top: '60%',
-      border: {
-        type: 'line',
-      },
-      style: {
-        border: {
-          fg: '#888',
-        },
-      },
+      height: '50%',
+      top: '50%',
+      name: 'Users'
     });
 
     const usersTitle = blessed.text({
-      width: '90%',
-      left: '5%',
-      align: 'center',
+      width: '100%-4',
+      height: 1,
+      top: 1,
+      left: 2,
       content: '{bold}Users{/bold}',
       tags: true,
     });
 
     const userList = blessed.list({
-      width: '90%',
-      height: '70%',
-      left: '5%',
-      top: '20%',
+      width: '100%-4',
+      height: '100%-4',
+      left: 2,
+      top: 3,
       keys: true,
       vi: true,
+      mouse: true,
+      scrollable: true,
       search: searchChannels,
       style: {
         selected: {
-          bg: '#373b41',
-          fg: '#c5c8c6',
+          bg: 'red',
+          fg: 'white',
         },
       },
       tags: true,
@@ -205,17 +210,21 @@ module.exports = {
     sideBar.append(channelsBox);
     sideBar.append(usersBox);
     mainWindow.append(mainWindowTitle);
+    mainWindow.append(focusIndicator);
     mainWindow.append(chatWindow);
+    mainWindow.append(messageInputBorder);
     mainWindow.append(messageInput);
     container.append(sideBar);
     container.append(mainWindow);
     screen.append(container);
 
-    keyBindings.escape = process.exit.bind(null, 0); // esc to exit
+    keyBindings['C-q'] = process.exit.bind(null, 0);
     keyBindings['C-c'] = channelList.focus.bind(channelList); // ctrl-c for channels
     keyBindings['C-u'] = userList.focus.bind(userList); // ctrl-u for users
     keyBindings['C-w'] = messageInput.focus.bind(messageInput); // ctrl-w for write
     keyBindings['C-l'] = chatWindow.focus.bind(chatWindow); // ctrl-l for message list
+
+    keyBindings.escape = chatWindow.focus.bind(chatWindow);
 
     function callKeyBindings(ch, key) {
       const fn = keyBindings[key.full];
@@ -234,34 +243,24 @@ module.exports = {
       }
     });
 
-    // scrolling in chat window
-    chatWindow.on('keypress', (ch, key) => {
-      if (key.name === 'up') {
-        chatWindow.scroll(-1);
-        screen.render();
-      } else if (key.name === 'down') {
-        chatWindow.scroll(1);
-        screen.render();
-      }
-    });
-
     // event handlers for focus and blur of inputs
     const onFocus = (component) => {
-      component.style.border = { fg: '#cc6666' }; // eslint-disable-line no-param-reassign
+      focusIndicator.content = `{bold}${component.name}{/bold}`;
       screen.render();
     };
+
     const onBlur = (component) => {
-      component.style.border = { fg: '#888' }; // eslint-disable-line no-param-reassign
       screen.render();
     };
+
     userList.on('focus', onFocus.bind(null, usersBox));
-    userList.on('blur', onBlur.bind(null, usersBox));
+    // userList.on('blur', onBlur.bind(null, usersBox));
     channelList.on('focus', onFocus.bind(null, channelsBox));
-    channelList.on('blur', onBlur.bind(null, channelsBox));
+    // channelList.on('blur', onBlur.bind(null, channelsBox));
     messageInput.on('focus', onFocus.bind(null, messageInput));
-    messageInput.on('blur', onBlur.bind(null, messageInput));
+    // messageInput.on('blur', onBlur.bind(null, messageInput));
     chatWindow.on('focus', onFocus.bind(null, mainWindow));
-    chatWindow.on('blur', onBlur.bind(null, mainWindow));
+    // chatWindow.on('blur', onBlur.bind(null, mainWindow));
 
     return {
       screen,
@@ -274,6 +273,7 @@ module.exports = {
       mainWindow,
       mainWindowTitle,
       chatWindow,
+      messageInputBorder,
       messageInput,
     };
   },
